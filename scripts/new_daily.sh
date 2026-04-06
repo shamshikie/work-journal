@@ -27,6 +27,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily/$YEAR_MONTH"
 OUTPUT_FILE="$DAILY_DIR/$DATE.md"
+TEMPLATE_FILE="$ROOT_DIR/templates/daily.md"
 
 mkdir -p "$DAILY_DIR"
 
@@ -35,21 +36,11 @@ if [ -f "$OUTPUT_FILE" ]; then
   exit 0
 fi
 
-cat > "$OUTPUT_FILE" << EOF
----
-date: $DATE
-week: W$WEEK
-month: $YEAR_MONTH
-half: ${FISCAL_YEAR}-${HALF}
----
-
-# 日報 $DATE
-
-## 作業内容
-
-## 詰まったこと・メモ
-
-## 明日やること
-EOF
+sed \
+  -e "s/YYYY-MM-DD/$DATE/g" \
+  -e "s/WXX/W$WEEK/g" \
+  -e "s/YYYY-MM/$YEAR_MONTH/g" \
+  -e "s/YYYY-HX/${FISCAL_YEAR}-${HALF}/g" \
+  "$TEMPLATE_FILE" > "$OUTPUT_FILE"
 
 echo "作成しました: $OUTPUT_FILE"
