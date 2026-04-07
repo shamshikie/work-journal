@@ -73,6 +73,11 @@ ${GOALS_SECTION}日報：
 $DAILY_CONTENT" | ollama run qwen2.5:7b)
 
 cat > "$OUTPUT_FILE" << EOF
+---
+month: ${YEAR_MONTH}
+half: ${FISCAL_YEAR}-${HALF}
+---
+
 # 月報 ${MONTH_LABEL}
 
 $MONTHLY_CONTENT

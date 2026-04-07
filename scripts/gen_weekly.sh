@@ -73,6 +73,11 @@ $FORMAT
 $DAILY_CONTENT" | ollama run qwen2.5:7b)
 
 cat > "$OUTPUT_FILE" << EOF
+---
+week: ${FISCAL_YEAR}-W${WEEK}
+half: ${FISCAL_YEAR}-${HALF}
+---
+
 # 週報 ${FISCAL_YEAR}-W${WEEK}（${WEEK_START}〜${WEEK_END}）
 
 $WEEKLY_CONTENT
