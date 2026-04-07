@@ -24,6 +24,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily"
 WEEKLY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/weekly"
 OUTPUT_FILE="$WEEKLY_DIR/W${WEEK}.md"
+TEMPLATE_FILE="$ROOT_DIR/templates/weekly.md"
 
 mkdir -p "$WEEKLY_DIR"
 
@@ -62,11 +63,11 @@ echo "週報を生成中..."
 WEEK_START=$(date -d "Monday this week" +%m/%d 2>/dev/null || date +%m/%d)
 WEEK_END=$(date -d "Sunday this week" +%m/%d 2>/dev/null || date +%m/%d)
 
+FORMAT=$(grep "^##" "$TEMPLATE_FILE")
+
 WEEKLY_CONTENT=$(echo "以下は今週の日報です。以下のフォーマットで週報を日本語で作成してください。
 フォーマット：
-## 今週やったこと
-## 詰まったこと・課題
-## 来週やること
+$FORMAT
 
 日報：
 $DAILY_CONTENT" | ollama run qwen2.5:7b)

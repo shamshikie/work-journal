@@ -27,6 +27,7 @@ DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily/$YEAR_MONTH"
 MONTHLY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/monthly"
 OUTPUT_FILE="$MONTHLY_DIR/${YEAR_MONTH}.md"
 GOALS_FILE="$ROOT_DIR/$FISCAL_YEAR/$HALF/goals.md"
+TEMPLATE_FILE="$ROOT_DIR/templates/monthly.md"
 
 mkdir -p "$MONTHLY_DIR"
 
@@ -62,11 +63,11 @@ fi
 
 echo "月報を生成中..."
 
+FORMAT=$(grep "^##" "$TEMPLATE_FILE" | sed "s/HX/${HALF}/g")
+
 MONTHLY_CONTENT=$(echo "以下は今月の日報です。以下のフォーマットで月報を日本語で作成してください。
 フォーマット：
-## 今月の作業サマリー
-## 目標（${HALF}）への進捗
-## 課題・来月に持ち越すこと
+$FORMAT
 
 ${GOALS_SECTION}日報：
 $DAILY_CONTENT" | ollama run qwen2.5:7b)
