@@ -47,3 +47,6 @@ if command -v ollama &> /dev/null; then
   echo "$COMMIT_MSGS" | ollama run qwen2.5:7b \
     "以下のgitコミットメッセージを日本語で3行以内に箇条書きでまとめてください："
 fi
+
+echo ""
+read -r -p "Enterキーで終了..."
