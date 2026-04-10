@@ -37,23 +37,37 @@ ollama pull qwen2.5:7b
 ### 毎日
 
 ```bash
-# 日報ファイルを作成
+# 今日の日報ファイルを作成
 ./scripts/new_daily.sh
 
-# gitコミットを確認して日報記入の補助に使う
+# 過去の日報を作成（日付指定）
+./scripts/new_daily.sh -d 2026-04-09
+
+# gitコミット内容を要約して日報記入の補助にする
 ./scripts/commit_summary.sh ~/repos/your-project
+
+# 特定日のコミットを要約
+./scripts/commit_summary.sh ~/repos/your-project 2026-04-09
 ```
 
 ### 毎週
 
 ```bash
+# 今週の週報を生成
 ./scripts/gen_weekly.sh
+
+# 過去の週報を生成（その週に含まれる任意の日を指定）
+./scripts/gen_weekly.sh -d 2026-04-07
 ```
 
 ### 毎月
 
 ```bash
+# 今月の月報を生成
 ./scripts/gen_monthly.sh
+
+# 過去の月報を生成（その月に含まれる任意の日を指定）
+./scripts/gen_monthly.sh -d 2026-03-15
 ```
 
 ### 半期末
@@ -63,7 +77,18 @@ ollama pull qwen2.5:7b
 ./scripts/gen_review.sh
 
 # 過去の半期を指定
-./scripts/gen_review.sh 2026 H1
+./scripts/gen_review.sh 2025 H2
+```
+
+### 過去日付の指定について
+
+`-d` オプションには `YYYY-MM-DD` 形式で日付を渡す。
+「N日前」などの相対指定はシェルで計算して渡す：
+
+```bash
+./scripts/new_daily.sh   -d $(date -d "1 day ago"   +%Y-%m-%d)
+./scripts/gen_weekly.sh  -d $(date -d "1 week ago"  +%Y-%m-%d)
+./scripts/gen_monthly.sh -d $(date -d "1 month ago" +%Y-%m-%d)
 ```
 
 ## TODO管理
