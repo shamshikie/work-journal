@@ -40,12 +40,12 @@ if command -v ollama &> /dev/null; then
   COMMIT_MSGS=$(git -C "$REPO" log \
     --after="$DATE 00:00:00" \
     --before="$DATE 23:59:59" \
-    --format="%s" \
+    --format="----%n%h%n%B" \
     --all)
   echo ""
   echo "--- Ollama要約 ---"
   echo "$COMMIT_MSGS" | ollama run qwen2.5:7b \
-    "以下のgitコミットメッセージを日本語で3行以内に箇条書きでまとめてください："
+    "以下のgitコミットメッセージを日本語で箇条書きでまとめてください："
 fi
 
 echo ""
