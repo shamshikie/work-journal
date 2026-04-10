@@ -1,7 +1,6 @@
 #!/bin/bash
 # 指定週の日報からOllamaで週報を生成する
-# 使い方: ./scripts/gen_weekly.sh [-d N|YYYY-MM-DD]
-#         -d N          N週前の週報を生成
+# 使い方: ./scripts/gen_weekly.sh [-d YYYY-MM-DD]
 #         -d YYYY-MM-DD 指定日を含む週の週報を生成
 set -e
 
@@ -9,15 +8,9 @@ REF_DATE=$(date +%Y-%m-%d)
 
 while getopts "d:" opt; do
   case $opt in
-    d)
-      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
-        REF_DATE=$(date -d "$OPTARG weeks ago" +%Y-%m-%d)
-      else
-        REF_DATE="$OPTARG"
-      fi
-      ;;
+    d) REF_DATE="$OPTARG" ;;
     *)
-      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      echo "使い方: $0 [-d YYYY-MM-DD]"
       exit 1
       ;;
   esac

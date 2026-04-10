@@ -1,7 +1,6 @@
 #!/bin/bash
 # 指定月の日報からOllamaで月報を生成する
-# 使い方: ./scripts/gen_monthly.sh [-d N|YYYY-MM-DD]
-#         -d N          Nヶ月前の月報を生成
+# 使い方: ./scripts/gen_monthly.sh [-d YYYY-MM-DD]
 #         -d YYYY-MM-DD 指定日を含む月の月報を生成
 set -e
 
@@ -9,15 +8,9 @@ REF_DATE=$(date +%Y-%m-%d)
 
 while getopts "d:" opt; do
   case $opt in
-    d)
-      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
-        REF_DATE=$(date -d "$OPTARG months ago" +%Y-%m-%d)
-      else
-        REF_DATE="$OPTARG"
-      fi
-      ;;
+    d) REF_DATE="$OPTARG" ;;
     *)
-      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      echo "使い方: $0 [-d YYYY-MM-DD]"
       exit 1
       ;;
   esac
