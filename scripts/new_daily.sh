@@ -1,7 +1,6 @@
 #!/bin/bash
 # 今日（または指定日）の日報ファイルを作成する
-# 使い方: ./scripts/new_daily.sh [-d N|YYYY-MM-DD]
-#         -d N          N日前の日報を作成
+# 使い方: ./scripts/new_daily.sh [-d YYYY-MM-DD]
 #         -d YYYY-MM-DD 指定日の日報を作成
 set -e
 
@@ -9,15 +8,9 @@ REF_DATE=$(date +%Y-%m-%d)
 
 while getopts "d:" opt; do
   case $opt in
-    d)
-      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
-        REF_DATE=$(date -d "$OPTARG days ago" +%Y-%m-%d)
-      else
-        REF_DATE="$OPTARG"
-      fi
-      ;;
+    d) REF_DATE="$OPTARG" ;;
     *)
-      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      echo "使い方: $0 [-d YYYY-MM-DD]"
       exit 1
       ;;
   esac
