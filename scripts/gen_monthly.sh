@@ -1,12 +1,32 @@
 #!/bin/bash
-# 今月の日報からOllamaで月報を生成する
+# 指定月の日報からOllamaで月報を生成する
+# 使い方: ./scripts/gen_monthly.sh [-d N|YYYY-MM-DD]
+#         -d N          Nヶ月前の月報を生成
+#         -d YYYY-MM-DD 指定日を含む月の月報を生成
 set -e
 
-YEAR=$(date +%Y)
-MONTH=$(date +%-m)
-MONTH_PADDED=$(date +%m)
-YEAR_MONTH=$(date +%Y-%m)
-MONTH_LABEL=$(date +%Y年%-m月)
+REF_DATE=$(date +%Y-%m-%d)
+
+while getopts "d:" opt; do
+  case $opt in
+    d)
+      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+        REF_DATE=$(date -d "$OPTARG months ago" +%Y-%m-%d)
+      else
+        REF_DATE="$OPTARG"
+      fi
+      ;;
+    *)
+      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      exit 1
+      ;;
+  esac
+done
+
+YEAR=$(date -d "$REF_DATE" +%Y)
+MONTH=$(date -d "$REF_DATE" +%-m)
+YEAR_MONTH=$(date -d "$REF_DATE" +%Y-%m)
+MONTH_LABEL=$(date -d "$REF_DATE" +%Y年%-m月)
 
 # 年度・半期を判定
 if [ "$MONTH" -ge 4 ]; then
@@ -41,7 +61,7 @@ if [ -f "$OUTPUT_FILE" ]; then
 fi
 
 if [ ! -d "$DAILY_DIR" ]; then
-  echo "今月の日報ディレクトリが見つかりません: $DAILY_DIR"
+  echo "指定月の日報ディレクトリが見つかりません: $DAILY_DIR"
   exit 1
 fi
 
@@ -49,7 +69,7 @@ echo "${YEAR_MONTH}の日報を収集中..."
 DAILY_CONTENT=$(cat "$DAILY_DIR"/*.md 2>/dev/null || true)
 
 if [ -z "$DAILY_CONTENT" ]; then
-  echo "今月の日報が見つかりません"
+  echo "指定月の日報が見つかりません"
   exit 1
 fi
 

@@ -1,13 +1,33 @@
 #!/bin/bash
-# 今日の日報ファイルを作成する
+# 今日（または指定日）の日報ファイルを作成する
+# 使い方: ./scripts/new_daily.sh [-d N|YYYY-MM-DD]
+#         -d N          N日前の日報を作成
+#         -d YYYY-MM-DD 指定日の日報を作成
 set -e
 
-DATE=$(date +%Y-%m-%d)
-YEAR=$(date +%Y)
-MONTH=$(date +%-m)
-MONTH_PADDED=$(date +%m)
-YEAR_MONTH=$(date +%Y-%m)
-WEEK=$(date +%V)
+REF_DATE=$(date +%Y-%m-%d)
+
+while getopts "d:" opt; do
+  case $opt in
+    d)
+      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+        REF_DATE=$(date -d "$OPTARG days ago" +%Y-%m-%d)
+      else
+        REF_DATE="$OPTARG"
+      fi
+      ;;
+    *)
+      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      exit 1
+      ;;
+  esac
+done
+
+DATE=$REF_DATE
+YEAR=$(date -d "$REF_DATE" +%Y)
+MONTH=$(date -d "$REF_DATE" +%-m)
+YEAR_MONTH=$(date -d "$REF_DATE" +%Y-%m)
+WEEK=$(date -d "$REF_DATE" +%V)
 
 # 年度・半期を判定（4月始まり）
 if [ "$MONTH" -ge 4 ]; then
@@ -18,7 +38,6 @@ if [ "$MONTH" -ge 4 ]; then
     HALF="H2"
   fi
 else
-  # 1〜3月は前年度のH2
   FISCAL_YEAR=$((YEAR - 1))
   HALF="H2"
 fi

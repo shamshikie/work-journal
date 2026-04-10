@@ -1,10 +1,36 @@
 #!/bin/bash
-# 今週の日報からOllamaで週報を生成する
+# 指定週の日報からOllamaで週報を生成する
+# 使い方: ./scripts/gen_weekly.sh [-d N|YYYY-MM-DD]
+#         -d N          N週前の週報を生成
+#         -d YYYY-MM-DD 指定日を含む週の週報を生成
 set -e
 
-YEAR=$(date +%Y)
-MONTH=$(date +%-m)
-WEEK=$(date +%V)
+REF_DATE=$(date +%Y-%m-%d)
+
+while getopts "d:" opt; do
+  case $opt in
+    d)
+      if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
+        REF_DATE=$(date -d "$OPTARG weeks ago" +%Y-%m-%d)
+      else
+        REF_DATE="$OPTARG"
+      fi
+      ;;
+    *)
+      echo "使い方: $0 [-d N|YYYY-MM-DD]"
+      exit 1
+      ;;
+  esac
+done
+
+YEAR=$(date -d "$REF_DATE" +%Y)
+MONTH=$(date -d "$REF_DATE" +%-m)
+WEEK=$(date -d "$REF_DATE" +%V)
+
+# REF_DATE の週の月曜・日曜を計算
+DOW=$(date -d "$REF_DATE" +%u)  # 1=月〜7=日
+WEEK_START=$(date -d "$REF_DATE - $((DOW - 1)) days" +%m/%d)
+WEEK_END=$(date -d "$REF_DATE + $((7 - DOW)) days" +%m/%d)
 
 # 年度・半期を判定
 if [ "$MONTH" -ge 4 ]; then
@@ -37,8 +63,8 @@ if [ -f "$OUTPUT_FILE" ]; then
   fi
 fi
 
-# 今週の日報を収集
-echo "今週（W${WEEK}）の日報を収集中..."
+# 指定週の日報を収集
+echo "W${WEEK}（${WEEK_START}〜${WEEK_END}）の日報を収集中..."
 DAILY_CONTENT=""
 while IFS= read -r -d '' file; do
   FILE_DATE=$(grep "^date:" "$file" | sed 's/date: //' | tr -d '[:space:]')
@@ -54,14 +80,11 @@ $(cat "$file")"
 done < <(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" -print0 2>/dev/null)
 
 if [ -z "$DAILY_CONTENT" ]; then
-  echo "今週の日報が見つかりません"
+  echo "指定週の日報が見つかりません"
   exit 1
 fi
 
 echo "週報を生成中..."
-
-WEEK_START=$(date -d "Monday this week" +%m/%d 2>/dev/null || date +%m/%d)
-WEEK_END=$(date -d "Sunday this week" +%m/%d 2>/dev/null || date +%m/%d)
 
 FORMAT=$(grep "^##" "$TEMPLATE_FILE")
 
