@@ -28,6 +28,11 @@ else
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# frontmatter（--- ... ---）を除去して本文だけ返す
+strip_frontmatter() {
+  awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm{print}' "$1"
+}
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BASE_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF"
 GOALS_FILE="$BASE_DIR/goals.md"
@@ -58,13 +63,23 @@ PERIOD_CONTENT=""
 
 if [ -d "$MONTHLY_DIR" ] && [ -n "$(ls "$MONTHLY_DIR"/*.md 2>/dev/null)" ]; then
   echo "月報を使用します"
-  PERIOD_CONTENT=$(cat "$MONTHLY_DIR"/*.md 2>/dev/null)
+  for f in "$MONTHLY_DIR"/*.md; do
+    [ -f "$f" ] || continue
+    PERIOD_CONTENT="$PERIOD_CONTENT
+---
+$(strip_frontmatter "$f")
+"
+  done
 else
   echo "月報が見つかりません。日報から直接生成します"
   DAILY_DIR="$BASE_DIR/daily"
   if [ -d "$DAILY_DIR" ]; then
-    PERIOD_CONTENT=$(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" \
-      -exec cat {} \; 2>/dev/null)
+    while IFS= read -r -d '' f; do
+      PERIOD_CONTENT="$PERIOD_CONTENT
+---
+$(strip_frontmatter "$f")
+"
+    done < <(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" -print0 2>/dev/null)
   fi
 fi
 
@@ -87,13 +102,14 @@ else
   PERIOD_LABEL="${FISCAL_YEAR}年10月〜${NEXT_YEAR}年3月"
 fi
 
-REVIEW_CONTENT=$(echo "以下は${HALF_LABEL}の目標と、期間中の業務記録です。
-各目標に対して「取り組んだこと」と「達成度・結果」を日本語で評価してください。
+REVIEW_CONTENT=$(printf '%s\n\n%s\n' \
+"以下の目標と業務記録を読み、各目標について評価してください。
+各目標に対して「### 目標名」「取り組んだこと（箇条書き）」「達成度・結果（一言）」の形式で出力してください。
+見出しと内容のみ出力。前置き・後書き・説明文・案内文は一切不要。
 
 目標：
-$GOALS_CONTENT
-
-業務記録：
+$GOALS_CONTENT" \
+"業務記録：
 $PERIOD_CONTENT" | ollama run qwen2.5:7b)
 
 cat > "$OUTPUT_FILE" << EOF

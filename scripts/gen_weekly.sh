@@ -38,6 +38,11 @@ else
   HALF="H2"
 fi
 
+# frontmatter（--- ... ---）を除去して本文だけ返す
+strip_frontmatter() {
+  awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm{print}' "$1"
+}
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily"
@@ -67,7 +72,7 @@ while IFS= read -r -d '' file; do
       DAILY_CONTENT="$DAILY_CONTENT
 
 ---
-$(cat "$file")"
+$(strip_frontmatter "$file")"
     fi
   fi
 done < <(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" -print0 2>/dev/null)
@@ -79,13 +84,19 @@ fi
 
 echo "週報を生成中..."
 
-FORMAT=$(grep "^##" "$TEMPLATE_FILE")
+FORMAT=$(strip_frontmatter "$TEMPLATE_FILE" | grep "^##")
 
-WEEKLY_CONTENT=$(echo "以下は今週の日報です。以下のフォーマットで週報を日本語で作成してください。
+WEEKLY_CONTENT=$(printf '%s\n\n%s\n' \
+"以下の日報を読み、週報として3つのセクションにまとめてください。
+・## 今週やったこと: 全日報の作業内容を統合・箇条書きで要約
+・## 詰まったこと・課題: 全日報の詰まったこと・メモを統合・箇条書きで要約
+・## 来週やること: 全日報の明日やることから来週を箇条書きで要約
+##見出し＋内容のみ出力。前置き・後書き・説明文・案内文は一切不要。
+
 フォーマット：
 $FORMAT
-
-日報：
+" \
+"日報：
 $DAILY_CONTENT" | ollama run qwen2.5:7b)
 
 cat > "$OUTPUT_FILE" << EOF

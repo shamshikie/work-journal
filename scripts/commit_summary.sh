@@ -45,7 +45,7 @@ if command -v ollama &> /dev/null; then
   echo ""
   echo "--- Ollama要約 ---"
   echo "$COMMIT_MSGS" | ollama run qwen2.5:7b \
-    "以下のgitコミットメッセージを日本語で箇条書きでまとめてください："
+    "以下のgitコミットメッセージを日本語で箇条書きでまとめてください。箇条書きのみ出力し、前置き・後書き・説明文は含めないでください："
 fi
 
 echo ""
