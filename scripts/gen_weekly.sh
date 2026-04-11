@@ -65,15 +65,13 @@ fi
 echo "W${WEEK}（${WEEK_START}〜${WEEK_END}）の日報を収集中..."
 DAILY_CONTENT=""
 while IFS= read -r -d '' file; do
-  FILE_DATE=$(grep "^date:" "$file" | sed 's/date: //' | tr -d '[:space:]')
-  if [ -n "$FILE_DATE" ]; then
-    FILE_WEEK=$(date -d "$FILE_DATE" +%V 2>/dev/null)
-    if [ "$FILE_WEEK" = "$WEEK" ]; then
-      DAILY_CONTENT="$DAILY_CONTENT
+  FILE_DATE=$(basename "$file" .md)
+  FILE_WEEK=$(date -d "$FILE_DATE" +%V 2>/dev/null)
+  if [ "$FILE_WEEK" = "$WEEK" ]; then
+    DAILY_CONTENT="$DAILY_CONTENT
 
 ---
-$(strip_frontmatter "$file")"
-    fi
+$(cat "$file")"
   fi
 done < <(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" -print0 2>/dev/null)
 

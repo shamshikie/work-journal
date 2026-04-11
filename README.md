@@ -1,110 +1,133 @@
 # work-journal
 
-日報をベースに週報・月報・半期レビューを自動生成する個人用ワークログ。
+Obsidianで日報を書き、週報・月報をスクリプトで自動生成する個人用ワークログ。
 
 ## ディレクトリ構成
 
 ```
 work-journal/
-├── TODO.md                    # 持ち越しタスクのみ管理
-├── templates/                 # 各種テンプレート
-├── scripts/                   # 自動化スクリプト
+├── .obsidian/             # Obsidian設定（GitHubで管理）
+├── goals/                 # 目標管理
+│   ├── 2026-H1.md         # 上期目標（4〜9月）
+│   ├── 2026-H2.md         # 下期目標（10〜3月）
+│   └── career.md          # 長期・キャリア目標
+├── 1on1/                  # 同僚との関係管理ノート
+├── misc/                  # 分類不要なメモ・雑記
+├── templates/             # テンプレート
+│   ├── daily.md           # 日報テンプレート（Templater構文）
+│   ├── weekly.md          # 週報テンプレート
+│   ├── monthly.md         # 月報テンプレート
+│   ├── goals.md           # 目標テンプレート
+│   └── 1on1.md            # 1on1ノートテンプレート
+├── scripts/               # 自動化スクリプト
+├── TODO.md                # 複数日にまたがるタスクのみ管理
 └── YYYY/
-    ├── H1/                    # 上期（4〜9月）
-    │   ├── goals.md           # 上期目標
-    │   ├── daily/YYYY-MM/     # 日報
-    │   ├── weekly/            # 週報（自動生成）
-    │   ├── monthly/           # 月報（自動生成）
-    │   └── review/            # 半期レビュー（自動生成）
-    └── H2/                    # 下期（10〜3月）
+    ├── H1/                # 上期ログ（4〜9月）
+    │   ├── daily/YYYY-MM/ # 日報
+    │   ├── weekly/        # 週報（スクリプト生成）
+    │   ├── monthly/       # 月報（スクリプト生成）
+    │   └── review/        # 半期レビュー（スクリプト生成）
+    └── H2/                # 下期ログ（10〜3月）
         └── ...
 ```
 
 ## セットアップ
 
-```bash
-git init
-git add .
-git commit -m "initial commit"
+### 1. Obsidianで開く
 
-# Ollamaのインストール（週報・月報・レビュー生成に使用）
+Obsidian を起動 → **「Open folder as vault」** でこのリポジトリを選択。
+
+### 2. プラグインをインストール
+
+設定 → **Community plugins** → **Turn on community plugins** → **Browse** で以下をインストール・有効化：
+
+| プラグイン | 優先度 | 用途 |
+|---|---|---|
+| **Calendar**（by Liam Cain） | 必須 | カレンダーUIから日報を作成 |
+| **Templater**（by SilentVoid） | 必須 | 日報作成時にfrontmatterを自動入力 |
+| **Dataview**（by Michael Brenan） | 推奨 | frontmatterやタグでノートを集計・一覧化 |
+| **Git**（by Vinzent） | 推奨 | Obsidian内からgit commit/pushを操作 |
+
+インストール後、左サイドバーにカレンダーが表示される。
+
+### 3. 週報・月報の生成（任意）
+
+Ollamaを使って日報から週報・月報を自動生成できる。
+
+```bash
 # https://ollama.com
 ollama pull qwen2.5:7b
 ```
 
-## 使い方
+## 毎日の使い方
 
-### 毎日
+### 日報を作成する
 
-```bash
-# 今日の日報ファイルを作成
-./scripts/new_daily.sh
+1. **Calendarの今日の日付をクリック** → `2026/H1/daily/2026-04/2026-04-12.md` が作成される
+2. Templaterが自動でfrontmatterと日付見出しを今日の値に展開する
+3. **前日のファイルを全選択コピー → 今日のファイルに貼り付け**（frontmatterと見出しは今日のものに上書きされているので編集不要）
+4. 今日の内容に編集していく
 
-# 過去の日報を作成（日付指定）
-./scripts/new_daily.sh -d 2026-04-09
+### タスクキューの運用
 
-# gitコミット内容を要約して日報記入の補助にする
-./scripts/commit_summary.sh ~/repos/your-project
-
-# 特定日のコミットを要約
-./scripts/commit_summary.sh ~/repos/your-project 2026-04-09
+```markdown
+## タスクキュー
+- [ ] 未着手のタスク
+- [x] 完了したタスク（日報セクションに記録してから消す）
+- [-] やらなくてよくなったタスク（drop）
+- [/] 進行中のタスク
 ```
 
-### 毎週
+## 週報・月報の生成
 
 ```bash
 # 今週の週報を生成
 ./scripts/gen_weekly.sh
 
-# 過去の週報を生成（その週に含まれる任意の日を指定）
-./scripts/gen_weekly.sh -d 2026-04-07
-```
-
-### 毎月
-
-```bash
-# 今月の月報を生成
+# 今月の月報を生成（goals/YYYY-HX.md を参照）
 ./scripts/gen_monthly.sh
 
-# 過去の月報を生成（その月に含まれる任意の日を指定）
-./scripts/gen_monthly.sh -d 2026-03-15
-```
-
-### 半期末
-
-```bash
-# 現在の半期のレビューを生成
+# 半期レビューを生成（goals/YYYY-HX.md を参照）
 ./scripts/gen_review.sh
 
-# 過去の半期を指定
-./scripts/gen_review.sh 2025 H2
+# 過去の日付を指定する場合
+./scripts/gen_weekly.sh  -d 2026-04-07
+./scripts/gen_monthly.sh -d 2026-03-15
+./scripts/gen_review.sh 2026 H1
 ```
 
-### 過去日付の指定について
+## 目標管理
 
-`-d` オプションには `YYYY-MM-DD` 形式で日付を渡す。
-「N日前」などの相対指定はシェルで計算して渡す：
+`goals/` フォルダに半期ごとの目標と長期目標をまとめる。
 
-```bash
-./scripts/new_daily.sh   -d $(date -d "1 day ago"   +%Y-%m-%d)
-./scripts/gen_weekly.sh  -d $(date -d "1 week ago"  +%Y-%m-%d)
-./scripts/gen_monthly.sh -d $(date -d "1 month ago" +%Y-%m-%d)
-```
+| ファイル | 内容 |
+|---|---|
+| `goals/2026-H1.md` | 上期（4〜9月）の目標 |
+| `goals/2026-H2.md` | 下期（10〜3月）の目標 |
+| `goals/career.md` | 長期・キャリア目標 |
 
-## TODO管理
+新しい半期が始まったら `templates/goals.md` をコピーして `goals/YYYY-HX.md` を作成する。
 
-- `TODO.md` には**複数日にまたがるタスク**のみ書く
-- 完了したら削除して `git commit -m "done: タスク名"`
-- 当日完結したタスクは日報に直接書く
-- 過去の完了タスクは `git log TODO.md` で確認
+## 半期切り替え時の対応（年2回）
 
-## 日報の書き方
+H2（10月）になったら Obsidian の設定を変更する：
 
-- frontmatterは `new_daily.sh` が自動生成するので触らない
-- セクションは書きたい項目だけ埋めれば良い
-- プロジェクト名やタグは書きたいときだけ本文に自由に書く
+設定 → **Daily notes** → **New file location** を `2026/H2/daily` に変更。
 
-## 年度・半期の自動判定
+## GitHub管理について
+
+`.obsidian/` の以下は**コミット対象**：
+- `app.json`、`core-plugins.json`、`community-plugins.json`
+- `daily-notes.json`、`templates.json`
+- `plugins/calendar/data.json`、`plugins/templater-obsidian/data.json`
+
+以下は**除外**（`.gitignore` で設定済み）：
+- `workspace.json`（ウィンドウ状態）
+- `cache/`、プラグインバイナリ（`main.js` など）
+
+プラグイン本体はGit管理しないため、別環境では再インストールが必要。
+
+## 年度・半期の判定ルール
 
 スクリプトは4月始まりの日本の会計年度で動作する。
 

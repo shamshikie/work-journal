@@ -35,7 +35,7 @@ strip_frontmatter() {
 }
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 BASE_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF"
-GOALS_FILE="$BASE_DIR/goals.md"
+GOALS_FILE="$ROOT_DIR/goals/${FISCAL_YEAR}-${HALF}.md"
 MONTHLY_DIR="$BASE_DIR/monthly"
 REVIEW_DIR="$BASE_DIR/review"
 OUTPUT_FILE="$REVIEW_DIR/${FISCAL_YEAR}-${HALF}.md"
