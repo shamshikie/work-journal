@@ -7,28 +7,30 @@ Obsidianで日報を書き、週報・月報をスクリプトで自動生成す
 ```
 work-journal/
 ├── .obsidian/             # Obsidian設定（GitHubで管理）
-├── goals/                 # 目標管理
-│   ├── 2026-H1.md         # 上期目標（4〜9月）
-│   ├── 2026-H2.md         # 下期目標（10〜3月）
-│   └── career.md          # 長期・キャリア目標
-├── 1on1/                  # 同僚との関係管理ノート
-├── misc/                  # 分類不要なメモ・雑記
-├── templates/             # テンプレート
+├── 00_templates/          # テンプレート
 │   ├── daily.md           # 日報テンプレート（Templater構文）
 │   ├── weekly.md          # 週報テンプレート
 │   ├── monthly.md         # 月報テンプレート
 │   ├── goals.md           # 目標テンプレート
 │   └── 1on1.md            # 1on1ノートテンプレート
-├── scripts/               # 自動化スクリプト
-├── TODO.md                # 複数日にまたがるタスクのみ管理
-└── YYYY/
-    ├── H1/                # 上期ログ（4〜9月）
-    │   ├── daily/YYYY-MM/ # 日報
-    │   ├── weekly/        # 週報（スクリプト生成）
-    │   ├── monthly/       # 月報（スクリプト生成）
-    │   └── review/        # 半期レビュー（スクリプト生成）
-    └── H2/                # 下期ログ（10〜3月）
-        └── ...
+├── 01_journal/            # 年次ジャーナル
+│   └── YYYY/
+│       ├── H1/            # 上期ログ（4〜9月）
+│       │   ├── daily/YYYY-MM/ # 日報
+│       │   ├── weekly/    # 週報（スクリプト生成）
+│       │   └── monthly/   # 月報（スクリプト生成）
+│       └── H2/            # 下期ログ（10〜3月）
+│           └── ...
+├── 02_goals/              # 目標管理
+│   ├── career.md          # 長期・キャリア目標
+│   └── YYYY/              # 年度ごと
+│       ├── YYYY-H1.md     # 上期目標（4〜9月）
+│       ├── YYYY-H2.md     # 下期目標（10〜3月）
+│       ├── YYYY-H1-result.md  # 上期達成結果（スクリプト生成）
+│       └── YYYY-H2-result.md  # 下期達成結果（スクリプト生成）
+├── 03_people/             # 同僚との関係管理ノート
+├── 04_misc/               # 分類不要なメモ・雑記
+└── scripts/               # 自動化スクリプト
 ```
 
 ## セットアップ
@@ -63,7 +65,7 @@ ollama pull qwen2.5:7b
 
 ### 日報を作成する
 
-1. **Calendarの今日の日付をクリック** → `2026/H1/daily/2026-04/2026-04-12.md` が作成される
+1. **Calendarの今日の日付をクリック** → `01_journal/2026/H1/daily/2026-04/2026-04-12.md` が作成される
 2. Templaterが自動でfrontmatterと日付見出しを今日の値に展開する
 3. **前日のファイルを全選択コピー → 今日のファイルに貼り付け**（frontmatterと見出しは今日のものに上書きされているので編集不要）
 4. 今日の内容に編集していく
@@ -84,10 +86,10 @@ ollama pull qwen2.5:7b
 # 今週の週報を生成
 ./scripts/gen_weekly.sh
 
-# 今月の月報を生成（goals/YYYY-HX.md を参照）
+# 今月の月報を生成（02_goals/YYYY/YYYY-HX.md を参照）
 ./scripts/gen_monthly.sh
 
-# 半期レビューを生成（goals/YYYY-HX.md を参照）
+# 半期達成結果を生成（02_goals/YYYY/YYYY-HX.md を参照）
 ./scripts/gen_review.sh
 
 # 過去の日付を指定する場合
@@ -96,23 +98,36 @@ ollama pull qwen2.5:7b
 ./scripts/gen_review.sh 2026 H1
 ```
 
+## コミットサマリーの生成
+
+日報の `## 日報` セクションに貼る素材として、指定リポジトリの当日コミットを Ollama で要約できる。
+
+```bash
+# 今日のコミットを要約
+./scripts/commit_summary.sh ~/repos/my-project
+
+# 特定日のコミットを要約
+./scripts/commit_summary.sh ~/repos/my-project 2026-04-07
+```
+
 ## 目標管理
 
-`goals/` フォルダに半期ごとの目標と長期目標をまとめる。
+`02_goals/` フォルダに半期ごとの目標と長期目標をまとめる。
 
 | ファイル | 内容 |
 |---|---|
-| `goals/2026-H1.md` | 上期（4〜9月）の目標 |
-| `goals/2026-H2.md` | 下期（10〜3月）の目標 |
-| `goals/career.md` | 長期・キャリア目標 |
+| `02_goals/2026/2026-H1.md` | 上期（4〜9月）の目標 |
+| `02_goals/2026/2026-H2.md` | 下期（10〜3月）の目標 |
+| `02_goals/career.md` | 長期・キャリア目標 |
 
-新しい半期が始まったら `templates/goals.md` をコピーして `goals/YYYY-HX.md` を作成する。
+新しい半期が始まったら `00_templates/goals.md` をコピーして `02_goals/YYYY/YYYY-HX.md` を作成する。  
+達成結果は `gen_review.sh` が `02_goals/YYYY/YYYY-HX-result.md` に生成する。
 
 ## 半期切り替え時の対応（年2回）
 
 H2（10月）になったら Obsidian の設定を変更する：
 
-設定 → **Daily notes** → **New file location** を `2026/H2/daily` に変更。
+設定 → **Daily notes** → **New file location** を `01_journal/2026/H2/daily` に変更。
 
 ## GitHub管理について
 
@@ -133,6 +148,6 @@ H2（10月）になったら Obsidian の設定を変更する：
 
 | 実行する月 | 保存先ディレクトリ |
 |---|---|
-| 4〜9月（例: 2026年5月） | `2026/H1/` |
-| 10〜12月（例: 2026年11月） | `2026/H2/` |
-| 1〜3月（例: 2027年2月） | `2026/H2/` |
+| 4〜9月（例: 2026年5月） | `01_journal/2026/H1/` |
+| 10〜12月（例: 2026年11月） | `01_journal/2026/H2/` |
+| 1〜3月（例: 2027年2月） | `01_journal/2026/H2/` |

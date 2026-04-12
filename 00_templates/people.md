@@ -1,9 +1,9 @@
 ---
 name: 
-created: YYYY-MM-DD
+created: <% tp.date.now("YYYY-MM-DD") %>
 ---
 
-# 1on1: 
+# :name:
 
 ## 関係性・背景
 

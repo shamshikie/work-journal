@@ -41,11 +41,11 @@ strip_frontmatter() {
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily/$YEAR_MONTH"
-MONTHLY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/monthly"
+DAILY_DIR="$ROOT_DIR/01_journal/$FISCAL_YEAR/$HALF/daily/$YEAR_MONTH"
+MONTHLY_DIR="$ROOT_DIR/01_journal/$FISCAL_YEAR/$HALF/monthly"
 OUTPUT_FILE="$MONTHLY_DIR/${YEAR_MONTH}.md"
-GOALS_FILE="$ROOT_DIR/goals/${FISCAL_YEAR}-${HALF}.md"
-TEMPLATE_FILE="$ROOT_DIR/templates/monthly.md"
+GOALS_FILE="$ROOT_DIR/02_goals/${FISCAL_YEAR}/${FISCAL_YEAR}-${HALF}.md"
+TEMPLATE_FILE="$ROOT_DIR/00_templates/monthly.md"
 
 mkdir -p "$MONTHLY_DIR"
 
