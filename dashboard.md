@@ -1,28 +1,31 @@
 # Dashboard
 
-## 🔄 Doing
-
-```tasks
-not done
-status.type is IN_PROGRESS
-group by filename
-```
-
-## 📋 Todo
-
-```tasks
-not done
-status.type is TODO
-scheduled on or before today
-sort by due
-sort by priority
-group by filename
-```
-
-## ✅ Done (今週)
+## ✅ Done (今月・先月)
 
 ```tasks
 done
-done this week
+(done this month) OR (done last month)
+group by filename
+```
+
+## ✅ Done (全期間)
+
+```tasks
+done
+group by filename
+```
+
+## ❌ Cancelled (今月・先月)
+
+```tasks
+status.type is CANCELLED
+(cancelled this month) OR (cancelled last month)
+group by filename
+```
+
+## ❌ Cancelled (全期間)
+
+```tasks
+status.type is CANCELLED
 group by filename
 ```
