@@ -1,5 +1,5 @@
 #!/bin/bash
-# 指定リポジトリの今日のコミットを一覧表示し、Ollamaで要約する
+# 指定リポジトリの今日のコミットを一覧表示する
 # 使い方: ./scripts/commit_summary.sh <リポジトリのパス> [日付]
 # 例:     ./scripts/commit_summary.sh ~/repos/my-project
 #         ./scripts/commit_summary.sh ~/repos/my-project 2026-04-01
@@ -20,9 +20,11 @@ fi
 
 echo "=== $(basename "$REPO") のコミット ($DATE) ==="
 
+AUTHOR=$(git config --global user.email)
 COMMITS=$(git -C "$REPO" log \
   --after="$DATE 00:00:00" \
   --before="$DATE 23:59:59" \
+  --author="$AUTHOR" \
   --format="%h %s" \
   --all)
 
@@ -34,19 +36,3 @@ fi
 echo "$COMMITS" | while read -r line; do
   echo "- $line"
 done
-
-# Ollamaが使える場合は要約する
-if command -v ollama &> /dev/null; then
-  COMMIT_MSGS=$(git -C "$REPO" log \
-    --after="$DATE 00:00:00" \
-    --before="$DATE 23:59:59" \
-    --format="----%n%h%n%B" \
-    --all)
-  echo ""
-  echo "--- Ollama要約 ---"
-  echo "$COMMIT_MSGS" | ollama run qwen2.5:7b \
-    "以下のgitコミットメッセージを日本語で箇条書きでまとめてください。箇条書きのみ出力し、前置き・後書き・説明文は含めないでください："
-fi
-
-echo ""
-read -r -p "Enterキーで終了..."
