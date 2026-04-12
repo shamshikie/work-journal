@@ -1,5 +1,6 @@
 ---
 half: YYYY-HX
+department: 部署名
 ---
 
 # 目標

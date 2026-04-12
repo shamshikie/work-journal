@@ -1,9 +1,11 @@
 ---
 week: YYYY-WXX
 half: YYYY-HX
+start: MM/DD
+end: MM/DD
 ---
 
-# 週報 MM/DD〜MM/DD
+# 週報
 
 ## 今週やったこと
 

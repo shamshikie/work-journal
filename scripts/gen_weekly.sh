@@ -101,9 +101,11 @@ cat > "$OUTPUT_FILE" << EOF
 ---
 week: ${FISCAL_YEAR}-W${WEEK}
 half: ${FISCAL_YEAR}-${HALF}
+start: ${WEEK_START}
+end: ${WEEK_END}
 ---
 
-# 週報 ${FISCAL_YEAR}-W${WEEK}（${WEEK_START}〜${WEEK_END}）
+# 週報
 
 $WEEKLY_CONTENT
 EOF
