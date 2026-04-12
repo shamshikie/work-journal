@@ -4,5 +4,6 @@
   "templater-obsidian",
   "obsidian-tasks-plugin",
   "obsidian-git",
-  "dataview"
+  "dataview",
+  "tag-wrangler"
 ]

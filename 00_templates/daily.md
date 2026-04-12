@@ -33,6 +33,6 @@ for (let i = 1; i <= 60; i++) {
 if (bodyContent !== null) {
   tR += bodyContent.trimEnd();
 } else {
-  tR += `# 日報\n\n## 今日やること\n\n## タスクキュー\n\n## メモ\n\n## 日報`;
+  tR += `# 日報\n\n## 今日やること\n\n## タスクキュー\n\n- [ ] タスク名 #p/プロジェクト #area/領域\n\n## メモ\n\n## 日報`;
 }
 _%>

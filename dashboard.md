@@ -15,6 +15,13 @@ done
 group by filename
 ```
 
+## 🏷️ Done by Tag (全期間)
+
+```tasks
+done
+group by tags
+```
+
 ## ❌ Cancelled (今月・先月)
 
 ```tasks
