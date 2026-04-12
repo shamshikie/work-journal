@@ -1,6 +1,6 @@
 {
-  "autorun": false,
-  "format": "YYYY-MM/YYYY-MM-DD",
-  "folder": "01_journal/2026/H1/daily",
-  "template": "00_templates/daily"
+    "autorun": false,
+    "format": "YYYY-MM/YYYY-MM-DD",
+    "folder": "10_journal/2026/H1/daily",
+    "template": "00_templates/daily"
 }

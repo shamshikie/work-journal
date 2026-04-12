@@ -45,8 +45,8 @@ strip_frontmatter() {
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DAILY_DIR="$ROOT_DIR/01_journal/$FISCAL_YEAR/$HALF/daily"
-WEEKLY_DIR="$ROOT_DIR/01_journal/$FISCAL_YEAR/$HALF/weekly"
+DAILY_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF/daily"
+WEEKLY_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF/weekly"
 OUTPUT_FILE="$WEEKLY_DIR/W${WEEK}.md"
 TEMPLATE_FILE="$ROOT_DIR/00_templates/weekly.md"
 

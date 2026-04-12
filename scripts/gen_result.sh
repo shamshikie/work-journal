@@ -34,10 +34,10 @@ strip_frontmatter() {
   awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm{print}' "$1"
 }
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-BASE_DIR="$ROOT_DIR/01_journal/$FISCAL_YEAR/$HALF"
-GOALS_FILE="$ROOT_DIR/02_goals/${FISCAL_YEAR}/${FISCAL_YEAR}-${HALF}.md"
+BASE_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF"
+GOALS_FILE="$ROOT_DIR/20_goals/${FISCAL_YEAR}/${FISCAL_YEAR}-${HALF}.md"
 MONTHLY_DIR="$BASE_DIR/monthly"
-RESULT_DIR="$ROOT_DIR/02_goals/${FISCAL_YEAR}"
+RESULT_DIR="$ROOT_DIR/20_goals/${FISCAL_YEAR}"
 OUTPUT_FILE="$RESULT_DIR/${FISCAL_YEAR}-${HALF}-result.md"
 
 mkdir -p "$RESULT_DIR"
