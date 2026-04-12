@@ -1,1 +1,7 @@
-["calendar", "templater-obsidian"]
+[
+  "obsidian-icon-folder",
+  "calendar",
+  "templater-obsidian",
+  "obsidian-tasks-plugin",
+  "obsidian-git"
+]
