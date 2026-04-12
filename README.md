@@ -90,12 +90,12 @@ ollama pull qwen2.5:7b
 ./scripts/gen_monthly.sh
 
 # 半期達成結果を生成（02_goals/YYYY/YYYY-HX.md を参照）
-./scripts/gen_review.sh
+./scripts/gen_result.sh
 
 # 過去の日付を指定する場合
 ./scripts/gen_weekly.sh  -d 2026-04-07
 ./scripts/gen_monthly.sh -d 2026-03-15
-./scripts/gen_review.sh 2026 H1
+./scripts/gen_result.sh 2026 H1
 ```
 
 ## コミットサマリーの生成
