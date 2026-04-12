@@ -1,5 +1,5 @@
 #!/bin/bash
-# 半期レビューを生成する（目標に対する達成・結果をまとめる）
+# 半期達成結果を生成する（目標に対する達成・結果をまとめる）
 # 使い方: ./scripts/gen_review.sh [FISCAL_YEAR] [HALF]
 # 例:     ./scripts/gen_review.sh          # 現在の年度・半期
 #         ./scripts/gen_review.sh 2026 H1  # 指定した年度・半期
@@ -34,13 +34,13 @@ strip_frontmatter() {
   awk 'NR==1&&/^---$/{fm=1;next} fm&&/^---$/{fm=0;next} !fm{print}' "$1"
 }
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-BASE_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF"
-GOALS_FILE="$BASE_DIR/goals.md"
+BASE_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF"
+GOALS_FILE="$ROOT_DIR/20_goals/${FISCAL_YEAR}/${FISCAL_YEAR}-${HALF}.md"
 MONTHLY_DIR="$BASE_DIR/monthly"
-REVIEW_DIR="$BASE_DIR/review"
-OUTPUT_FILE="$REVIEW_DIR/${FISCAL_YEAR}-${HALF}.md"
+RESULT_DIR="$ROOT_DIR/20_goals/${FISCAL_YEAR}"
+OUTPUT_FILE="$RESULT_DIR/${FISCAL_YEAR}-${HALF}-result.md"
 
-mkdir -p "$REVIEW_DIR"
+mkdir -p "$RESULT_DIR"
 
 # goals.md の存在確認
 if [ ! -f "$GOALS_FILE" ]; then
@@ -58,7 +58,7 @@ if [ -f "$OUTPUT_FILE" ]; then
 fi
 
 # 月報を収集（なければ日報にフォールバック）
-echo "${FISCAL_YEAR}-${HALF} のレビューを生成中..."
+echo "${FISCAL_YEAR}-${HALF} の達成結果を生成中..."
 PERIOD_CONTENT=""
 
 if [ -d "$MONTHLY_DIR" ] && [ -n "$(ls "$MONTHLY_DIR"/*.md 2>/dev/null)" ]; then
@@ -102,7 +102,7 @@ else
   PERIOD_LABEL="${FISCAL_YEAR}年10月〜${NEXT_YEAR}年3月"
 fi
 
-REVIEW_CONTENT=$(printf '%s\n\n%s\n' \
+RESULT_CONTENT=$(printf '%s\n\n%s\n' \
 "以下の目標と業務記録を読み、各目標について評価してください。
 各目標に対して「### 目標名」「取り組んだこと（箇条書き）」「達成度・結果（一言）」の形式で出力してください。
 見出しと内容のみ出力。前置き・後書き・説明文・案内文は一切不要。
@@ -113,9 +113,9 @@ $GOALS_CONTENT" \
 $PERIOD_CONTENT" | ollama run qwen2.5:7b)
 
 cat > "$OUTPUT_FILE" << EOF
-# ${HALF_LABEL}レビュー ${FISCAL_YEAR}-${HALF}（${PERIOD_LABEL}）
+# ${HALF_LABEL}達成結果 ${FISCAL_YEAR}-${HALF}（${PERIOD_LABEL}）
 
-$REVIEW_CONTENT
+$RESULT_CONTENT
 EOF
 
 echo "作成しました: $OUTPUT_FILE"

@@ -45,10 +45,10 @@ strip_frontmatter() {
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-DAILY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/daily"
-WEEKLY_DIR="$ROOT_DIR/$FISCAL_YEAR/$HALF/weekly"
+DAILY_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF/daily"
+WEEKLY_DIR="$ROOT_DIR/10_journal/$FISCAL_YEAR/$HALF/weekly"
 OUTPUT_FILE="$WEEKLY_DIR/W${WEEK}.md"
-TEMPLATE_FILE="$ROOT_DIR/templates/weekly.md"
+TEMPLATE_FILE="$ROOT_DIR/00_templates/weekly.md"
 
 mkdir -p "$WEEKLY_DIR"
 
@@ -65,15 +65,13 @@ fi
 echo "W${WEEK}（${WEEK_START}〜${WEEK_END}）の日報を収集中..."
 DAILY_CONTENT=""
 while IFS= read -r -d '' file; do
-  FILE_DATE=$(grep "^date:" "$file" | sed 's/date: //' | tr -d '[:space:]')
-  if [ -n "$FILE_DATE" ]; then
-    FILE_WEEK=$(date -d "$FILE_DATE" +%V 2>/dev/null)
-    if [ "$FILE_WEEK" = "$WEEK" ]; then
-      DAILY_CONTENT="$DAILY_CONTENT
+  FILE_DATE=$(basename "$file" .md)
+  FILE_WEEK=$(date -d "$FILE_DATE" +%V 2>/dev/null)
+  if [ "$FILE_WEEK" = "$WEEK" ]; then
+    DAILY_CONTENT="$DAILY_CONTENT
 
 ---
-$(strip_frontmatter "$file")"
-    fi
+$(cat "$file")"
   fi
 done < <(find "$DAILY_DIR" -name "*.md" -not -name ".gitkeep" -print0 2>/dev/null)
 
@@ -90,7 +88,7 @@ WEEKLY_CONTENT=$(printf '%s\n\n%s\n' \
 "以下の日報を読み、週報として3つのセクションにまとめてください。
 ・## 今週やったこと: 全日報の作業内容を統合・箇条書きで要約
 ・## 詰まったこと・課題: 全日報の詰まったこと・メモを統合・箇条書きで要約
-・## 来週やること: 全日報の明日やることから来週を箇条書きで要約
+・## 来週やること: 全日報のタスクキュー（未完タスク）と日報の内容から来週やることを箇条書きで推測
 ##見出し＋内容のみ出力。前置き・後書き・説明文・案内文は一切不要。
 
 フォーマット：
@@ -103,9 +101,11 @@ cat > "$OUTPUT_FILE" << EOF
 ---
 week: ${FISCAL_YEAR}-W${WEEK}
 half: ${FISCAL_YEAR}-${HALF}
+start: ${WEEK_START}
+end: ${WEEK_END}
 ---
 
-# 週報 ${FISCAL_YEAR}-W${WEEK}（${WEEK_START}〜${WEEK_END}）
+# 週報
 
 $WEEKLY_CONTENT
 EOF

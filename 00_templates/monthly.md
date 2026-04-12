@@ -3,7 +3,7 @@ month: YYYY-MM
 half: YYYY-HX
 ---
 
-# 月報 YYYY年M月
+# 月報
 
 ## 今月の作業サマリー
 
